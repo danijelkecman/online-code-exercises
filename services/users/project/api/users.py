@@ -1,12 +1,12 @@
 # services/users/project/api/users.py
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from project.api.models import User
 from project import db
 
 from sqlalchemy import exc
 
-users_blueprint = Blueprint('users', __name__)
+users_blueprint = Blueprint('users', __name__, template_folder='./templates')
 
 
 @users_blueprint.route('/users/ping', methods=['GET'])
@@ -26,10 +26,10 @@ def add_user():
     }
     if not post_data:
         return jsonify(response_object), 400
-    
+
     username = post_data.get('username')
     email = post_data.get('email')
-    try: 
+    try:
         user = User.query.filter_by(email=email).first()
         if not user:
             db.session.add(User(username=username, email=email))
@@ -40,7 +40,7 @@ def add_user():
         else:
             response_object['message'] = 'Sorry. That email already exsists.'
             return jsonify(response_object), 400
-    except exc.IntegrityError as e:
+    except exc.IntegrityError:
         db.session.rollback()
         return jsonify(response_object), 400
 
@@ -71,6 +71,7 @@ def get_single_user(user_id):
     except ValueError:
         return jsonify(response_object), 404
 
+
 @users_blueprint.route('/users', methods=['GET'])
 def get_all_users():
     """Get all users"""
@@ -81,3 +82,14 @@ def get_all_users():
         }
     }
     return jsonify(response_object), 200
+
+
+@users_blueprint.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        db.session.add(User(username=username, email=email))
+        db.session.commit()
+    users = User.query.all()
+    return render_template('index.html', users=users)

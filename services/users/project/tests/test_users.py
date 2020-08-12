@@ -14,17 +14,16 @@ def add_user(username, email):
     db.session.commit()
     return user
 
-class TestUserService(BaseTestCase): 
+class TestUserService(BaseTestCase):
     """Tests for the Users Service."""
-    
-    def test_users(self):
-        """Ensure the /ping route behaves correctly.""" 
-        response = self.client.get('/users/ping')
-        data = json.loads(response.data.decode()) 
-        self.assertEqual(response.status_code, 200) 
-        self.assertIn('pong!', data['message']) 
-        self.assertIn('success', data['status'])
 
+    def test_users(self):
+        """Ensure the /ping route behaves correctly."""
+        response = self.client.get('/users/ping')
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('pong!', data['message'])
+        self.assertIn('success', data['status'])
 
     def test_add_user(self):
         """Ensure a new user can be added to the database"""
@@ -36,7 +35,7 @@ class TestUserService(BaseTestCase):
                     'email': 'danijel@danijel.co'
                 }),
                 content_type='application/json',
-                )
+            )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 201)
             self.assertIn('danijel@danijel.co was added!', data['message'])
@@ -103,7 +102,6 @@ class TestUserService(BaseTestCase):
             self.assertIn('danijel@danijel.co', data['data']['email'])
             self.assertIn('success', data['status'])
 
-    
     def test_single_user_no_id(self):
         """Ensure error is thrown if an id is not provided"""
         with self.client:
@@ -112,7 +110,6 @@ class TestUserService(BaseTestCase):
             self.assertEqual(response.status_code, 404)
             self.assertIn('User does not exist', data['message'])
             self.assertIn('fail', data['status'])
-            
 
     def test_single_user_incorrect_id(self):
         """Ensure error is thrown if the id does not exist"""
@@ -122,7 +119,6 @@ class TestUserService(BaseTestCase):
             self.assertEqual(response.status_code, 404)
             self.assertIn('User does not exist', data['message'])
             self.assertIn('fail', data['status'])
-
 
     def test_all_users(self):
         """Ensure get all users behaves correctly"""
@@ -139,5 +135,34 @@ class TestUserService(BaseTestCase):
             self.assertIn('danijel1', data['data']['users'][1]['username'])
             self.assertIn('danijel1@danijel.co', data['data']['users'][1]['email'])
 
-if __name__ == '__main__': 
+    def test_main_no_users(self):
+        """Ensure the main route behaves correctly when no users have been added to the database."""
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'<h1>All Users</h1>', response.data)
+        self.assertIn(b'<p>No users!</p>', response.data)
+
+    def test_main_with_users(self):
+        """Ensure the main route behaves correctly when users have been added to the database."""
+        add_user('danijel', 'danijel@danijel.com')
+        add_user('danijel1', 'danijel1@danijel.com')
+        with self.client:
+            response = self.client.get('/')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'<h1>All Users</h1>', response.data)
+            self.assertNotIn(b'<p>No users!</p>', response.data)
+            self.assertIn(b'danijel', response.data)
+            self.assertIn(b'danijel1', response.data)
+
+    def test_main_add_user(self):
+        """Ensure a new user can be added to the database."""
+        with self.client:
+            response = self.client.post('/', data=dict(username='danijel', email='danijel@danijel.com'), follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'<h1>All Users</h1>', response.data)
+            self.assertNotIn(b'<p>No users!</p>', response.data)
+            self.assertIn(b'danijel', response.data)
+
+
+if __name__ == '__main__':
     unittest.main()
