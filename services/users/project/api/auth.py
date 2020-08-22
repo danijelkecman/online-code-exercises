@@ -70,10 +70,10 @@ def login_user():
                 response_object['message'] = 'Successfully logged in.'
                 response_object['auth_token'] = auth_token.decode()
                 return jsonify(response_object), 200
-        else: 
+        else:
             response_object['message'] = 'User does not exist.'
             return jsonify(response_object), 404
-    except Exception as e:
+    except Exception:
         response_object['message'] = 'Try again.'
         return jsonify(response_object), 500
 
@@ -89,11 +89,11 @@ def logout_user():
         auth_token = auth_header.split(' ')[1]
         resp = User.decode_auth_token(auth_token)
         if not isinstance(resp, str):
-            response_object['status'] = 'success' 
-            response_object['message'] = 'Successfully logged out.' 
+            response_object['status'] = 'success'
+            response_object['message'] = 'Successfully logged out.'
             return jsonify(response_object), 200
         else:
-            response_object['message'] = resp 
+            response_object['message'] = resp
             return jsonify(response_object), 401
     else:
         return jsonify(response_object), 403
