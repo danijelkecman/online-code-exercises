@@ -13,13 +13,13 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(128), unique=True, nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False)
-    pasword = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean(), default=True, nullable=False)
 
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
-        self.pasword = bcrypt.generate_password_hash(password, current_app.config.get('BCRYPT_LOG_ROUNDS')).decode()
+        self.password = bcrypt.generate_password_hash(password, current_app.config.get('BCRYPT_LOG_ROUNDS')).decode()
 
     def to_json(self):
         return {
@@ -40,16 +40,24 @@ class User(db.Model):
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
-            return jwt.encode(payload, current_app.config.get('SECRET_KEY'), algorithm='HS256')
+            return jwt.encode(
+                payload,
+                current_app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
         except Exception as e:
             return e
 
     def decode_auth_token(auth_token):
         """Decodes the auth token - :param auth_token: - :return: integer|string"""
         try:
-            payload = jwt.decode(auth_token, current_app.config.get('SECRET_KEY'))
+            payload = jwt.decode(
+                auth_token,
+                current_app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
             return payload['sub']
         except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again'
+            return 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again'
+            return 'Invalid token. Please log in again.'
