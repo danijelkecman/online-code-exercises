@@ -19,7 +19,9 @@ def ping_pong():
 
 @users_blueprint.route('/users', methods=['POST'])
 def add_user():
+    print(request)
     post_data = request.get_json()
+    print(post_data)
     response_object = {
         'status': 'fail',
         'message': 'Invalid payload.'
@@ -87,6 +89,7 @@ def get_all_users():
 
 @users_blueprint.route('/', methods=['GET', 'POST'])
 def index():
+    print(request)
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']

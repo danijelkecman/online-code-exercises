@@ -67,7 +67,7 @@ class TestUserService(BaseTestCase):
             self.client.post(
                 '/users',
                 data=json.dumps({
-                    'username': 'daniejl',
+                    'username': 'danijel',
                     'email': 'danijel@danijel.co',
                     'password': 'password'
                 }),
@@ -76,7 +76,7 @@ class TestUserService(BaseTestCase):
             response = self.client.post(
                 '/users',
                 data=json.dumps({
-                    'username': 'daniejl',
+                    'username': 'danijel',
                     'email': 'danijel@danijel.co',
                     'password': 'password'
                 }),

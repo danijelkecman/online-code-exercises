@@ -10,7 +10,7 @@ const AddUser = (props) => {
                 type="text" 
                 placeholder="Enter a username" 
                 required
-                defaultValue={props.username}
+                value={props.username}
                 onChange={props.handleChange}
             />
         </div>
@@ -21,7 +21,7 @@ const AddUser = (props) => {
                 type="email" 
                 placeholder="Enter an email address" 
                 required
-                defaultValue={props.email}
+                value={props.email}
                 onChange={props.handleChange}
             />
         </div>

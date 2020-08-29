@@ -1,6 +1,10 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 const Form = (props) => {
+    if (props.isAuthenticated) {
+        return <Redirect to='/' />
+    }    
     return (
         <div>
             <h1>{props.formType}</h1>
@@ -13,7 +17,8 @@ const Form = (props) => {
                             className="form-control input-lg"
                             type="text"
                             placeholder="Enter a username"
-                            defaultValue={props.formData.username}
+                            required
+                            value={props.formData.username}
                             onChange={props.handleFormChange}
                         />
                     </div>
@@ -24,7 +29,8 @@ const Form = (props) => {
                         className="form-control input-lg"
                         type="email"
                         placeholder="Enter an email address"
-                        defaultValue={props.formData.email}
+                        value={props.formData.email}
+                        required
                         onChange={props.handleFormChange}
                     />
                 </div>
@@ -34,7 +40,8 @@ const Form = (props) => {
                         className="form-control input-lg"
                         type="password"
                         placeholder="Enter a password"
-                        defaultValue={props.formData.password}
+                        value={props.formData.password}
+                        required
                         onChange={props.handleFormChange}
                     />
                 </div>
